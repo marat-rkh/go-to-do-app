@@ -26,6 +26,10 @@ func InitTaskRegistry() {
 	taskRegistry = newMongoTaskRegistry()
 }
 
+func SetTaskRegistryForTests(tr TaskRegistry) {
+	taskRegistry = tr
+}
+
 func newMongoTaskRegistry() *MongoTaskRegistry {
 	loadTheEnv()
 	return createDBInstance()
