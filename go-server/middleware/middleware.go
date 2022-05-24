@@ -22,9 +22,13 @@ import (
 var taskRegistry TaskRegistry
 
 // create connection with mongo db
-func init() {
+func InitTaskRegistry() {
+	taskRegistry = newMongoTaskRegistry()
+}
+
+func newMongoTaskRegistry() *MongoTaskRegistry {
 	loadTheEnv()
-	createDBInstance()
+	return createDBInstance()
 }
 
 func loadTheEnv() {
@@ -36,7 +40,7 @@ func loadTheEnv() {
 	}
 }
 
-func createDBInstance() {
+func createDBInstance() *MongoTaskRegistry {
 	// DB connection string
 	connectionString := os.Getenv("DB_URI")
 
@@ -65,9 +69,11 @@ func createDBInstance() {
 
 	fmt.Println("Connected to MongoDB!")
 
-	taskRegistry = MongoTaskRegistry{Collection: client.Database(dbName).Collection(collName)}
+	var taskRegistry = MongoTaskRegistry{Collection: client.Database(dbName).Collection(collName)}
 
 	fmt.Println("Collection instance created!")
+
+	return &taskRegistry
 }
 
 // GetAllTask get all the task route
@@ -154,7 +160,7 @@ type MongoTaskRegistry struct {
 }
 
 // get all task from the DB and return it
-func (tr MongoTaskRegistry) GetAllTask() []models.ToDoList {
+func (tr *MongoTaskRegistry) GetAllTask() []models.ToDoList {
 	cur, err := tr.Collection.Find(context.Background(), bson.D{{}})
 	if err != nil {
 		log.Fatal(err)
@@ -181,7 +187,7 @@ func (tr MongoTaskRegistry) GetAllTask() []models.ToDoList {
 }
 
 // Insert one task in the DB
-func (tr MongoTaskRegistry) InsertOneTask(task models.ToDoList) {
+func (tr *MongoTaskRegistry) InsertOneTask(task models.ToDoList) {
 	insertResult, err := tr.Collection.InsertOne(context.Background(), task)
 
 	if err != nil {
@@ -192,7 +198,7 @@ func (tr MongoTaskRegistry) InsertOneTask(task models.ToDoList) {
 }
 
 // task complete method, update task's status to true
-func (tr MongoTaskRegistry) TaskComplete(task string) {
+func (tr *MongoTaskRegistry) TaskComplete(task string) {
 	fmt.Println(task)
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
@@ -206,7 +212,7 @@ func (tr MongoTaskRegistry) TaskComplete(task string) {
 }
 
 // task undo method, update task's status to false
-func (tr MongoTaskRegistry) UndoTask(task string) {
+func (tr *MongoTaskRegistry) UndoTask(task string) {
 	fmt.Println(task)
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
@@ -220,7 +226,7 @@ func (tr MongoTaskRegistry) UndoTask(task string) {
 }
 
 // delete one task from the DB, delete by ID
-func (tr MongoTaskRegistry) DeleteOneTask(task string) {
+func (tr *MongoTaskRegistry) DeleteOneTask(task string) {
 	fmt.Println(task)
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
@@ -233,7 +239,7 @@ func (tr MongoTaskRegistry) DeleteOneTask(task string) {
 }
 
 // delete all the tasks from the DB
-func (tr MongoTaskRegistry) DeleteAllTask() int64 {
+func (tr *MongoTaskRegistry) DeleteAllTask() int64 {
 	d, err := tr.Collection.DeleteMany(context.Background(), bson.D{{}}, nil)
 	if err != nil {
 		log.Fatal(err)

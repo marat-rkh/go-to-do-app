@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 
+	"go-server/middleware"
 	"go-server/router"
 )
 
 func main() {
+	middleware.InitTaskRegistry()
 	r := router.Router()
 	// fs := http.FileServer(http.Dir("build"))
 	// http.Handle("/", fs)
