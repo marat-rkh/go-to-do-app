@@ -19,7 +19,7 @@ import (
 )
 
 // collection object/instance
-var collection *mongo.Collection
+var taskRegistry TaskRegistry
 
 // create connection with mongo db
 func init() {
@@ -65,7 +65,7 @@ func createDBInstance() {
 
 	fmt.Println("Connected to MongoDB!")
 
-	collection = client.Database(dbName).Collection(collName)
+	taskRegistry = TaskRegistry{Collection: client.Database(dbName).Collection(collName)}
 
 	fmt.Println("Collection instance created!")
 }
@@ -74,7 +74,7 @@ func createDBInstance() {
 func GetAllTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	payload := getAllTask()
+	payload := taskRegistry.GetAllTask()
 	json.NewEncoder(w).Encode(payload)
 }
 
@@ -87,7 +87,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.ToDoList
 	_ = json.NewDecoder(r.Body).Decode(&task)
 	// fmt.Println(task, r.Body)
-	insertOneTask(task)
+	taskRegistry.InsertOneTask(task)
 	json.NewEncoder(w).Encode(task)
 }
 
@@ -100,7 +100,7 @@ func TaskComplete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
-	taskComplete(params["id"])
+	taskRegistry.TaskComplete(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
 }
 
@@ -113,7 +113,7 @@ func UndoTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
-	undoTask(params["id"])
+	taskRegistry.UndoTask(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
 }
 
@@ -124,7 +124,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	params := mux.Vars(r)
-	deleteOneTask(params["id"])
+	taskRegistry.DeleteOneTask(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
 	// json.NewEncoder(w).Encode("Task not found")
 
@@ -134,15 +134,19 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 func DeleteAllTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	count := deleteAllTask()
+	count := taskRegistry.DeleteAllTask()
 	json.NewEncoder(w).Encode(count)
 	// json.NewEncoder(w).Encode("Task not found")
 
 }
 
+type TaskRegistry struct {
+	*mongo.Collection
+}
+
 // get all task from the DB and return it
-func getAllTask() []models.ToDoList {
-	cur, err := collection.Find(context.Background(), bson.D{{}})
+func (tr TaskRegistry) GetAllTask() []models.ToDoList {
+	cur, err := tr.Collection.Find(context.Background(), bson.D{{}})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -168,8 +172,8 @@ func getAllTask() []models.ToDoList {
 }
 
 // Insert one task in the DB
-func insertOneTask(task models.ToDoList) {
-	insertResult, err := collection.InsertOne(context.Background(), task)
+func (tr TaskRegistry) InsertOneTask(task models.ToDoList) {
+	insertResult, err := tr.Collection.InsertOne(context.Background(), task)
 
 	if err != nil {
 		log.Fatal(err)
@@ -179,12 +183,12 @@ func insertOneTask(task models.ToDoList) {
 }
 
 // task complete method, update task's status to true
-func taskComplete(task string) {
+func (tr TaskRegistry) TaskComplete(task string) {
 	fmt.Println(task)
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"status": true}}
-	result, err := collection.UpdateOne(context.Background(), filter, update)
+	result, err := tr.Collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -193,12 +197,12 @@ func taskComplete(task string) {
 }
 
 // task undo method, update task's status to false
-func undoTask(task string) {
+func (tr TaskRegistry) UndoTask(task string) {
 	fmt.Println(task)
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"status": false}}
-	result, err := collection.UpdateOne(context.Background(), filter, update)
+	result, err := tr.Collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -207,11 +211,11 @@ func undoTask(task string) {
 }
 
 // delete one task from the DB, delete by ID
-func deleteOneTask(task string) {
+func (tr TaskRegistry) DeleteOneTask(task string) {
 	fmt.Println(task)
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
-	d, err := collection.DeleteOne(context.Background(), filter)
+	d, err := tr.Collection.DeleteOne(context.Background(), filter)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -220,8 +224,8 @@ func deleteOneTask(task string) {
 }
 
 // delete all the tasks from the DB
-func deleteAllTask() int64 {
-	d, err := collection.DeleteMany(context.Background(), bson.D{{}}, nil)
+func (tr TaskRegistry) DeleteAllTask() int64 {
+	d, err := tr.Collection.DeleteMany(context.Background(), bson.D{{}}, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
