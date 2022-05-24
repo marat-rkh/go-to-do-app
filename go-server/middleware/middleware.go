@@ -39,13 +39,13 @@ func loadTheEnv() {
 func createDBInstance() {
 	// DB connection string
 	connectionString := os.Getenv("DB_URI")
-	
+
 	// Database Name
 	dbName := os.Getenv("DB_NAME")
 
 	// Collection name
 	collName := os.Getenv("DB_COLLECTION_NAME")
-	
+
 	// Set client options
 	clientOptions := options.Client().ApplyURI(connectionString)
 
@@ -141,15 +141,15 @@ func DeleteAllTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // get all task from the DB and return it
-func getAllTask() []primitive.M {
+func getAllTask() []models.ToDoList {
 	cur, err := collection.Find(context.Background(), bson.D{{}})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var results []primitive.M
+	var results []models.ToDoList
 	for cur.Next(context.Background()) {
-		var result bson.M
+		var result models.ToDoList
 		e := cur.Decode(&result)
 		if e != nil {
 			log.Fatal(e)
