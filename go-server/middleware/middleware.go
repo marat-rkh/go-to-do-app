@@ -67,11 +67,13 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// DeleteAllTask delete all tasks route
-func DeleteAllTask(w http.ResponseWriter, r *http.Request) {
+// DeleteAllDone delete all tasks route
+func DeleteAllDone(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	count := taskRegistry.DeleteAllTask()
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	count := taskRegistry.DeleteAllDone()
 	json.NewEncoder(w).Encode(count)
 	// json.NewEncoder(w).Encode("Task not found")
 

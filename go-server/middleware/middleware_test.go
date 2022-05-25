@@ -63,8 +63,13 @@ func (tr testTaskRegistry) DeleteOneTask(task string) {
 	delete(tr, task)
 }
 
-func (tr testTaskRegistry) DeleteAllTask() int64 {
-	size := len(tr)
-	tr = testTaskRegistry{}
-	return int64(size)
+func (tr testTaskRegistry) DeleteAllDone() int64 {
+	count := 0
+	for id, e := range tr {
+		if e.Status {
+			delete(tr, id)
+			count += 1
+		}
+	}
+	return int64(count)
 }
