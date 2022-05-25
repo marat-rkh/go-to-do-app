@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import axios from "axios";
-import { Card, Header, Form, Input, Icon } from "semantic-ui-react";
+import {Button, Card, Form, Header, Icon, Input} from "semantic-ui-react";
 
 let endpoint = "http://localhost:8080";
 
@@ -144,6 +144,17 @@ class ToDoList extends Component {
       });
   };
 
+  deleteAllDone = () => {
+    axios.delete(endpoint + "/api/deleteAllDone", {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }).then((res) => {
+      console.log(res);
+      this.getTask();
+    });
+  };
+
   render() {
     return (
       <div>
@@ -164,6 +175,9 @@ class ToDoList extends Component {
             />
             {/* <Button >Create Task</Button> */}
           </Form>
+        </div>
+        <div className="row">
+          <Button variant="contained" onClick={() => this.deleteAllDone()}>Delete All Done</Button>
         </div>
         <div className="row">
           <Card.Group>{this.state.items}</Card.Group>
