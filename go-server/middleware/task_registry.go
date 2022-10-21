@@ -163,5 +163,5 @@ func (tr *MongoTaskRegistry) DeleteOneTask(task string) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Deleted Document", d.DeletedCount)
+	fmt.Printf("Deleted Document %s\n", d.DeletedCount)
 }
