@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/devcontainers/go:0-1.19
 
 ARG NODE_VERSION="lts/*"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
+RUN git config --global --add safe.directory /workspaces/GolandProjects/go-to-do-app
 
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
