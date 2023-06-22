@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/joho/godotenv"
-	"go-server/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"os"
+	"server/models"
 )
 
 // collection object/instance

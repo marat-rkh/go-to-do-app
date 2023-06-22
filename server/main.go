@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"go-server/middleware"
-	"go-server/router"
+	"server/middleware"
+	"server/router"
 )
 
 func main() {

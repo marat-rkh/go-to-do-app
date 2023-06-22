@@ -3,8 +3,8 @@ package middleware
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"go-server/models"
 	"net/http"
+	"server/models"
 )
 
 // GetAllTask get all the task route

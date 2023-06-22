@@ -2,11 +2,11 @@ package middleware
 
 import (
 	"encoding/json"
-	"go-server/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"server/models"
 	"testing"
 )
 
