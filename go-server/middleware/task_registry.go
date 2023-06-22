@@ -81,6 +81,7 @@ type TaskRegistry interface {
 	TaskComplete(task string)
 	UndoTask(task string)
 	DeleteOneTask(task string)
+	DeleteAllDone() int64
 }
 
 type MongoTaskRegistry struct {
@@ -164,4 +165,15 @@ func (tr *MongoTaskRegistry) DeleteOneTask(task string) {
 	}
 
 	fmt.Println("Deleted Document", d.DeletedCount)
+}
+
+// delete all the tasks from the DB
+func (tr *MongoTaskRegistry) DeleteAllDone() int64 {
+	d, err := tr.Collection.DeleteMany(context.Background(), bson.M{"status": true}, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Deleted Document", d.DeletedCount)
+	return d.DeletedCount
 }
