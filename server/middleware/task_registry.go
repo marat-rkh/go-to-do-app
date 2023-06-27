@@ -14,15 +14,15 @@ import (
 )
 
 // collection object/instance
-var taskRegistry TaskRegistry
+var todoRegistry TaskRegistry
 
 // create connection with mongo db
 func InitTaskRegistry() {
-	taskRegistry = newMongoTaskRegistry()
+	todoRegistry = newMongoTaskRegistry()
 }
 
 func SetTaskRegistryForTests(tr TaskRegistry) {
-	taskRegistry = tr
+	todoRegistry = tr
 }
 
 func newMongoTaskRegistry() *MongoTaskRegistry {

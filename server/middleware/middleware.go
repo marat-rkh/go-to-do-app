@@ -11,7 +11,7 @@ import (
 func GetAllTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	payload := taskRegistry.GetAllTask()
+	payload := todoRegistry.GetAllTask()
 	json.NewEncoder(w).Encode(payload)
 }
 
@@ -24,7 +24,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.ToDoList
 	_ = json.NewDecoder(r.Body).Decode(&task)
 	// fmt.Println(task, r.Body)
-	taskRegistry.InsertOneTask(task)
+	todoRegistry.InsertOneTask(task)
 	json.NewEncoder(w).Encode(task)
 }
 
@@ -37,7 +37,7 @@ func TaskComplete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
-	taskRegistry.TaskComplete(params["id"])
+	todoRegistry.TaskComplete(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
 }
 
@@ -50,7 +50,7 @@ func UndoTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
-	taskRegistry.UndoTask(params["id"])
+	todoRegistry.UndoTask(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
 }
 
@@ -61,7 +61,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	params := mux.Vars(r)
-	taskRegistry.DeleteOneTask(params["id"])
+	todoRegistry.DeleteOneTask(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
 	// json.NewEncoder(w).Encode("Task not found")
 
@@ -73,7 +73,7 @@ func DeleteAllDone(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	count := taskRegistry.DeleteAllDone()
+	count := todoRegistry.DeleteAllDone()
 	json.NewEncoder(w).Encode(count)
 	// json.NewEncoder(w).Encode("Task not found")
 

@@ -47,7 +47,7 @@ func TestDeleteAllDone(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Errorf("got status %d but wanted %d", res.Code, http.StatusOK)
 	}
-	actual := taskRegistry.GetAllTask()
+	actual := todoRegistry.GetAllTask()
 	expected := []models.ToDoList{task2}
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("got %v but wanted %v", actual, expected)
