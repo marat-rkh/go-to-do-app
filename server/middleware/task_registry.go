@@ -71,16 +71,18 @@ func createDBInstance() *MongoTaskRegistry {
 	var taskRegistry = MongoTaskRegistry{Collection: client.Database(dbName).Collection(collName)}
 
 	fmt.Println("Collection instance created!")
-
+	// TODO debug client.Database(dbName, nil)
 	return &taskRegistry
 }
 
+// TODO Code vision for navigation
 type TaskRegistry interface {
 	GetAllTask() []models.ToDoList
 	InsertOneTask(task models.ToDoList)
 	TaskComplete(task string)
 	UndoTask(task string)
 	DeleteOneTask(task string)
+	// TODO change signature, apply fixes
 	DeleteAllDone() int64
 }
 
@@ -116,6 +118,7 @@ func (tr *MongoTaskRegistry) GetAllTask() []models.ToDoList {
 }
 
 // Insert one task in the DB
+// TODO AI actions
 func (tr *MongoTaskRegistry) InsertOneTask(task models.ToDoList) {
 	insertResult, err := tr.Collection.InsertOne(context.Background(), task)
 
@@ -129,6 +132,7 @@ func (tr *MongoTaskRegistry) InsertOneTask(task models.ToDoList) {
 // task complete method, update task's status to true
 func (tr *MongoTaskRegistry) TaskComplete(task string) {
 	fmt.Println(task)
+	// TODO extract method, migrate receiver
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"status": true}}

@@ -9,6 +9,14 @@ import (
 	"server/router"
 )
 
+// TODO
+//
+//	AI
+//	Refactorings and related
+//	Debug
+//	HTTP client
+//	Frontend
+//	Scratches
 func main() {
 	middleware.InitTaskRegistry()
 	r := router.Router()
