@@ -31,29 +31,6 @@ func TestGetAllTask(t *testing.T) {
 	}
 }
 
-func TestDeleteAllDone(t *testing.T) {
-	task1 := models.ToDoList{primitive.NewObjectID(), "Task1", true}
-	task2 := models.ToDoList{primitive.NewObjectID(), "Task2", false}
-	task3 := models.ToDoList{primitive.NewObjectID(), "Task3", true}
-	SetTaskRegistryForTests(testTaskRegistry{
-		task1.ID.Hex(): &task1,
-		task2.ID.Hex(): &task2,
-		task3.ID.Hex(): &task3,
-	})
-
-	res := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/api/task", nil)
-	DeleteAllDone(res, req)
-	if res.Code != http.StatusOK {
-		t.Errorf("got status %d but wanted %d", res.Code, http.StatusOK)
-	}
-	actual := todoRegistry.GetAllTask()
-	expected := []models.ToDoList{task2}
-	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("got %v but wanted %v", actual, expected)
-	}
-}
-
 func unmarshal(res *httptest.ResponseRecorder) []models.ToDoList {
 	var actual []models.ToDoList
 	json.Unmarshal(res.Body.Bytes(), &actual)
@@ -84,15 +61,4 @@ func (tr testTaskRegistry) UndoTask(task string) {
 
 func (tr testTaskRegistry) DeleteOneTask(task string) {
 	delete(tr, task)
-}
-
-func (tr testTaskRegistry) DeleteAllDone() int64 {
-	count := 0
-	for id, e := range tr {
-		if e.Status {
-			delete(tr, id)
-			count += 1
-		}
-	}
-	return int64(count)
 }
